@@ -1,4 +1,4 @@
-import { getRedisClient } from './redis';
+import { redis, createPaste as redisCreatePaste } from './redis';
 import { nanoid } from 'nanoid';
 import { NextRequest } from 'next/server';
 import { getNowMs } from './time';
@@ -71,16 +71,8 @@ export async function createPaste(
     views_used: 0,
   };
 
-  const client = await getRedisClient();
-  const key = `paste:${id}`;
-  const serialized = JSON.stringify(paste);
-
-  // Store in Redis with TTL (as a safety measure, but we'll enforce manually too)
-  if (ttl_seconds) {
-    await client.setEx(key, ttl_seconds, serialized);
-  } else {
-    await client.set(key, serialized);
-  }
+  // Store in Redis with TTL (stored as an object: content, expiresAt, viewsLeft)
+  await redisCreatePaste(id, content, ttl_seconds, max_views ?? -1);
 
   return paste;
 }
@@ -92,22 +84,21 @@ export async function getPasteAndIncrement(
   id: string,
   request?: NextRequest
 ): Promise<Paste | null> {
-  const client = await getRedisClient();
   const key = `paste:${id}`;
   const now = getNowMs(request);
 
   // Get the paste
-  const data = await client.get(key);
+  const data = await redis.get(key);
   if (!data) {
     return null;
   }
 
-  const paste: Paste = JSON.parse(data);
+  const paste: Paste = JSON.parse(data as string);
 
   // Check expiration
   if (paste.expires_at_ms !== null && now >= paste.expires_at_ms) {
     // Paste expired, delete it
-    await client.del(key);
+    await redis.del(key);
     return null;
   }
 
@@ -129,7 +120,7 @@ export async function getPasteAndIncrement(
     return cjson.encode(paste)
   `;
 
-  const result = await client.eval(luaScript, {
+  const result = await redis.eval(luaScript, {
     keys: [key],
   });
 
@@ -147,20 +138,19 @@ export async function getPasteWithoutIncrement(
   id: string,
   request?: NextRequest
 ): Promise<Paste | null> {
-  const client = await getRedisClient();
   const key = `paste:${id}`;
   const now = getNowMs(request);
 
-  const data = await client.get(key);
+  const data = await redis.get(key);
   if (!data) {
     return null;
   }
 
-  const paste: Paste = JSON.parse(data);
+  const paste: Paste = JSON.parse(data as string);
 
   // Check expiration
   if (paste.expires_at_ms !== null && now >= paste.expires_at_ms) {
-    await client.del(key);
+    await redis.del(key);
     return null;
   }
 

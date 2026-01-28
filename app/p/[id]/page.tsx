@@ -12,23 +12,23 @@ export default async function PastePage({ params }: PageProps) {
 
   if (!paste) {
     return (
-      <div style={{ padding: "2rem" }}>
+      <main style={{ padding: "2rem" }}>
         <h2>Paste not found</h2>
         <Link href="/">← Create New Paste</Link>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div style={{ padding: "2rem" }}>
+    <main style={{ padding: "2rem" }}>
       <h1>Paste: {params.id}</h1>
-
       <p>
-        <strong>Remaining Views:</strong> {paste.views}
+        <strong>Remaining Views:</strong>{' '}
+        {paste.viewsLeft >= 0 ? paste.viewsLeft : '∞'}
       </p>
 
       <p>
-        <strong>Expires At:</strong>{" "}
+        <strong>Expires At:</strong>{' '}
         {new Date(paste.expiresAt).toLocaleString()}
       </p>
 
@@ -45,6 +45,6 @@ export default async function PastePage({ params }: PageProps) {
 
       <br />
       <Link href="/">← Create New Paste</Link>
-    </div>
+    </main>
   );
 }
