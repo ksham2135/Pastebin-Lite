@@ -11,7 +11,7 @@ import { NextRequest } from 'next/server';
  *   - Always use system time
  */
 export function getNowMs(request?: NextRequest): number {
-  const isTestMode = process.env.TEST_MODE === '0';
+  const isTestMode = process.env.TEST_MODE === '1';
 
   if (isTestMode && request) {
     const testNowMs = request.headers.get('x-test-now-ms');
