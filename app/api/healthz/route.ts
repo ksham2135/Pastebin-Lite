@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { getRedisClient } from '@/lib/redis';
+import { redis } from '@/lib/redis';
 
 /**
  * GET /api/healthz
@@ -9,8 +9,7 @@ import { getRedisClient } from '@/lib/redis';
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    const client = await getRedisClient();
-    const pong = await client.ping();
+    const pong = await redis.ping();
     
     if (pong !== 'PONG') {
       return NextResponse.json({ ok: false }, { status: 500 });

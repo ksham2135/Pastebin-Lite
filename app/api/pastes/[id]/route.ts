@@ -1,10 +1,10 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { getPasteAndIncrement, pasteToResponse } from '@/lib/paste';
+import { getPaste } from '@/lib/redis';
 
 /**
  * GET /api/pastes/:id
  * 
- * Retrieve a paste by ID, incrementing view count atomically.
+ * Retrieve a paste by ID, decrementing view count atomically.
  */
 export async function GET(
   request: NextRequest,
@@ -13,8 +13,8 @@ export async function GET(
   try {
     const { id } = await params;
 
-    // Get paste and increment views atomically
-    const paste = await getPasteAndIncrement(id, request);
+    // Get paste and decrement views
+    const paste = await getPaste(id);
 
     if (!paste) {
       return NextResponse.json(
@@ -23,9 +23,7 @@ export async function GET(
       );
     }
 
-    const response = pasteToResponse(paste);
-
-    return NextResponse.json(response, {
+    return NextResponse.json(paste, {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
