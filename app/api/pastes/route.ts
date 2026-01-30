@@ -1,6 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { createPaste, PasteCreateRequest } from '@/lib/paste';
 
+// Force dynamic rendering since we're writing to external service
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/pastes
  * 

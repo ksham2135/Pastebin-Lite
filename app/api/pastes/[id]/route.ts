@@ -1,6 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getPaste } from '@/lib/redis';
 
+// Force dynamic rendering since we're reading from external service
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/pastes/:id
  * 
@@ -14,7 +17,7 @@ export async function GET(
     const { id } = await params;
 
     // Get paste and decrement views
-    const paste = await getPaste(id);
+    const paste = await getPaste(id, request);
 
     if (!paste) {
       return NextResponse.json(

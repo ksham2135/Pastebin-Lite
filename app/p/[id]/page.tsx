@@ -1,14 +1,18 @@
 import { getPaste } from "@/lib/redis";
 import Link from "next/link";
 
+// Force dynamic rendering since we're reading from external service
+export const dynamic = 'force-dynamic';
+
 type PageProps = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function PastePage({ params }: PageProps) {
-  const paste = await getPaste(params.id);
+  const { id } = await params;
+  const paste = await getPaste(id);
 
   if (!paste) {
     return (
@@ -21,15 +25,15 @@ export default async function PastePage({ params }: PageProps) {
 
   return (
     <main style={{ padding: "2rem" }}>
-      <h1>Paste: {params.id}</h1>
+      <h1>Paste: {id}</h1>
       <p>
         <strong>Remaining Views:</strong>{' '}
-        {paste.viewsLeft >= 0 ? paste.viewsLeft : '∞'}
+        {paste.remaining_views !== null ? paste.remaining_views : '∞'}
       </p>
 
       <p>
         <strong>Expires At:</strong>{' '}
-        {new Date(paste.expiresAt).toLocaleString()}
+        {paste.expires_at ? new Date(paste.expires_at).toLocaleString() : 'Never'}
       </p>
 
       <pre

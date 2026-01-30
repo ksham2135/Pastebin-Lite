@@ -51,31 +51,23 @@ Each paste stores:
    cp .env.local.example .env.local
    ```
 
-   Edit `.env.local` and set your Redis connection:
+   Edit `.env.local` and set your Upstash Redis REST API connection:
    ```
-   REDIS_URL=redis://default:password@localhost:6379
+   UPSTASH_REDIS_REST_URL=https://your-redis-instance.upstash.io
+   UPSTASH_REDIS_REST_TOKEN=your-redis-token-here
    TEST_MODE=0
    ```
 
-   For Upstash Redis:
-   ```
-   REDIS_URL=redis://<username>:<password>@<host>:<port>
-   TEST_MODE=0
-   ```
+   You can get these values from your Upstash Redis dashboard under the "REST API" section.
 
-4. **Start Redis locally** (if using local Redis):
-   ```bash
-   redis-server
-   ```
-
-5. **Run the development server**:
+4. **Run the development server**:
    ```bash
    npm run dev
    ```
 
    The app will be available at `http://localhost:3000`
 
-6. **Build for production**:
+5. **Build for production**:
    ```bash
    npm run build
    npm start
@@ -210,8 +202,9 @@ curl -X GET http://localhost:3000/api/pastes/<id> \
 1. Push your code to GitHub
 2. Connect your repository to Vercel
 3. Set environment variables in Vercel dashboard:
-   - `REDIS_URL`: Your Redis connection string
-   - `TEST_MODE`: `0` (for production)
+   - `UPSTASH_REDIS_REST_URL`: Your Upstash Redis REST URL
+   - `UPSTASH_REDIS_REST_TOKEN`: Your Upstash Redis REST token
+   - `TEST_MODE`: `1` (for automated testing) or `0` (for production)
 4. Deploy
 
 ### Other Platforms

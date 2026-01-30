@@ -1,6 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { redis } from '@/lib/redis';
 
+// Force dynamic rendering since we're checking external service
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/healthz
  * 
@@ -10,7 +13,7 @@ import { redis } from '@/lib/redis';
 export async function GET(): Promise<NextResponse> {
   try {
     const pong = await redis.ping();
-    
+
     if (pong !== 'PONG') {
       return NextResponse.json({ ok: false }, { status: 500 });
     }
