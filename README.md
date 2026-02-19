@@ -2,6 +2,8 @@
 
 A production-ready, high-performance pastebin application built with Next.js, TypeScript, and Redis.
 
+Live Demo: View the live project here – https://pastebin-lite-brown-gamma.vercel.app/
+
 ## Project Description
 
 Pastebin Lite is a minimalist paste-sharing service that allows users to create, share, and view temporary text pastes. Each paste can have optional time-to-live (TTL) and view-count limits, making it ideal for sharing sensitive or temporary content.
